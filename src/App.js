@@ -1,14 +1,11 @@
 import { useEffect, useState } from "react";
 import './App.css';
 import logo from './mlh-prep.png'
-/*global google*/
 function App() {
   const [error, setError] = useState(null);
   const [isLoaded, setIsLoaded] = useState(false);
-  const [city, setCity] = useState("New York City")
+  const [city, setCity] = useState("Globe")
   const [results, setResults] = useState(null);
-  const [lat, SetLatitude] = useState(0);
-  const [lon, SetLongitude] = useState(0);
 
 useEffect(() => {
     if (navigator.geolocation){
@@ -21,13 +18,8 @@ useEffect(() => {
 function showPosition(position){
   var lat1=position.coords.latitude;
   var lon1=position.coords.longitude;
-  console.log(lat,lon)
-    SetLatitude(lat1);
-    SetLongitude(lon1);
-    console.log(lat,lon)
-    // displayLocation(lat,lon);
+  currentweather(lat1,lon1);
 }
-
 function showError(error){
     switch(error.code){
       case error.PERMISSION_DENIED:
@@ -42,38 +34,28 @@ function showError(error){
               case error.UNKNOWN_ERROR:
                 window.alert("An unknown error occurred.")
               break;
-        
     }
 }
 
-// function displayLocation(latitude,longitude){
-//     var geocoder;
-//     // console.log(google);
-//     geocoder = new google.maps.Geocoder();
-//     var latlng = new google.maps.LatLng(latitude, longitude);
-//     console.log(latlng);
-//     geocoder.geocode(
-//         {'latLng': latlng}, 
-//         function(results, status) {
-//             if (status == google.maps.GeocoderStatus.OK) {
-//                 if (results[0]) {
-//                     var add= results[0].formatted_address ;
-//                     var  value=add.split(",");
-//                     setCity(value[value.length-3]);
-//                 }
-//                 else  {
-//                   window.alert ("address not found");
-//                 }
-//             }
-//             else {
-//               window.alert ("Geocoder failed due to: " + status);
-//             }
-//         }
-//     );
-// }
-
-// "
-// http://api.openweathermap.org/data/2.5/weather?lat={51.5098}&lon={-0.1180}&appid=536df96687605e03adf15c60cfdcfdf3&units=metric'.format(latitude, longitude"
+function currentweather(lat1, lon1){
+  fetch("https://api.openweathermap.org/data/2.5/weather?lat=" + lat1 + "&lon=" + lon1 +"&appid=" + process.env.REACT_APP_APIKEY + "&units=metric") 
+      .then(res => res.json())
+      .then(
+        (result) => {
+          if (result['cod'] !== 200) {
+            setIsLoaded(false)
+          } else {
+            setIsLoaded(true);
+            setResults(result);
+            setCity(result.name);
+          }
+        },
+        (error) => {
+          setIsLoaded(true);
+          setError(error);
+        }
+      )
+}
 },[])
   useEffect(() => {
     fetch("https://api.openweathermap.org/data/2.5/weather?q=" + city + "&units=metric" + "&appid=" + process.env.REACT_APP_APIKEY)
