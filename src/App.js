@@ -16,9 +16,9 @@ useEffect(() => {
     }
 
 function showPosition(position){
-  var lat1=position.coords.latitude;
-  var lon1=position.coords.longitude;
-  currentweather(lat1,lon1);
+  var lat=position.coords.latitude;
+  var lon=position.coords.longitude;
+  currentweather(lat,lon);
 }
 function showError(error){
     switch(error.code){
@@ -37,8 +37,8 @@ function showError(error){
     }
 }
 
-function currentweather(lat1, lon1){
-  fetch("https://api.openweathermap.org/data/2.5/weather?lat=" + lat1 + "&lon=" + lon1 +"&appid=" + process.env.REACT_APP_APIKEY + "&units=metric") 
+function currentweather(lat, lon){
+  fetch("https://api.openweathermap.org/data/2.5/weather?lat=" + lat + "&lon=" + lon +"&appid=" + process.env.REACT_APP_APIKEY + "&units=metric") 
       .then(res => res.json())
       .then(
         (result) => {
